@@ -4,23 +4,27 @@ namespace App\Services;
 
 use App\Exceptions\NotFoundException;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Model;
 
 class AuthService extends BaseService
 {
     /**
      * @throws NotFoundException
+     * @throws \Exception
      */
     public function loginWithEmailOrPhone(string $identifier, string $password)
     {
 
         $identifierField = is_numeric($identifier) ? 'phone':'email';
         $credential = [$identifierField=>$identifier,'password'=>$password];
-        if (!auth()->attempt($credential))
-            return throw new NotFoundException(__('lang.login failed'),422);
         $user = User::where($identifierField, $identifier)->first();
+//        if (!auth()->attempt($credential))
+//            return throw new NotFoundException(__('lang.login failed'),422);
+        if (!$user)
+            return throw new NotFoundException(__('The user name or password are incorrect.'), 422);
+        if ($user && $user->password != $password)
+            return throw new NotFoundException(__('The user name or password are incorrect.'), 422);
         if ($user->active == User::NONACTIVE)
-            return throw new \Exception(__('lang.account_not_activated'),422);
+            return throw new \Exception(__('account_not_activated'),422);
         return $user;
     }
 
