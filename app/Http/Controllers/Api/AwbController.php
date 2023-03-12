@@ -18,14 +18,14 @@ class AwbController extends Controller
         $filters = [
             'company_id' => auth('sanctum')->user()->company_id,
             'branch_id' => auth('sanctum')->user()->branch_id,
-            'id' => $request->awb_id,
-            'receiver_id' => $request->receiver_id,
         ];
+        if (isset($request->keyword))
+            $filters['keyword'] = $request->keyword;
         $withRelations = [
             'company:id,name,address', 'department:id,name', 'branch',
             'receiver:id,name,phone,referance', 'status'
         ];
-        $awbs = $this->awbService->listing(filters: $filters, withRelations: $withRelations, paginateLength: $request->length);
+        $awbs = $this->awbService->listing(filters: $filters, withRelations: $withRelations);
         return AwbsResource::collection($awbs);
     }
 }

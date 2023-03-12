@@ -32,6 +32,9 @@ class AwbsFilter extends QueryFilter
         return $this->builder->where('receiver_id',$term);
     }
 
-
+    public function keyword($term)
+    {
+        return $this->builder->search($term);
+    }
 
 }

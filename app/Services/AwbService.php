@@ -20,7 +20,7 @@ class AwbService extends BaseService
 
     public function queryGet(array $filters = [], array $withRelations = []): Builder
     {
-        $awbs  = $this->model->query()->orderByDesc('id')->with($withRelations);
+        $awbs= $this->model->query()->orderByDesc('id')->with($withRelations);
         return $awbs->filter(new AwbsFilter($filters));
     }
 

@@ -2,17 +2,16 @@
 
 namespace App\Models;
 
-use App\Traits\EscapeUnicodeJson;
 use App\Traits\Filterable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Laravel\Scout\Searchable;
 
 class Awb extends Model
 {
-    use HasFactory,SoftDeletes,Filterable,EscapeUnicodeJson;
-    use Searchable;
+    use HasFactory,SoftDeletes;
+    use Filterable;
     public static $DEFAULIMAGE =  '/uploads/images/avatar.png';
 
     protected $fillable = [
@@ -100,5 +99,19 @@ class Awb extends Model
     public function awbCategory(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(AwbCategory::class,'category_id');
+    }
+
+    public function scopeSearch(Builder $query, string $term = null)
+    {
+        $term = '%'.$term.'%';
+        $query->where('code', 'like', $term)
+            ->orWhereIntegerInRaw('receiver_id', Receiver::query()
+                ->select('id')
+                ->where('referance', 'like', $term)
+                ->orWhere('phone','like', $term)
+                ->limit(3)
+                ->get()
+                ->pluck('id')
+            )->limit(3);
     }
 }
