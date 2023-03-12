@@ -16,14 +16,12 @@ class AuthService extends BaseService
 
         $identifierField = is_numeric($identifier) ? 'phone':'email';
         $credential = [$identifierField=>$identifier,'password'=>$password];
-        $user = User::where($identifierField, $identifier)->first();
+        $user = User::where($identifierField, $identifier)->where('password',$password)->first();
 //        if (!auth()->attempt($credential))
 //            return throw new NotFoundException(__('lang.login failed'),422);
         if (!$user)
             return throw new NotFoundException(__('The user name or password are incorrect.'), 422);
-        if ($user && $user->password != $password)
-            return throw new NotFoundException(__('The user name or password are incorrect.'), 422);
-        if ($user->active == User::NONACTIVE)
+       if ($user->active == User::NONACTIVE)
             return throw new \Exception(__('account_not_activated'),422);
         return $user;
     }

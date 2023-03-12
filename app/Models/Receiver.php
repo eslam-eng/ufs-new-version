@@ -4,45 +4,40 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 
 class Receiver extends Model
 {
-    use HasFactory;
+    use HasFactory,Searchable;
+
     protected $fillable = [
         'name','address','phone','company_id','city_id','area_id',
         'branch_id', 'company_name', 'branch_name', 'address2','referance', 'title'
     ];
 
-    protected $appends = [
-        'search'
-    ];
-
-    public function getSearchAttribute() {
-        return $this->name . "-" . $this->company_name . "-" . $this->referance;
-    }
 
     public function company()
     {
-        return $this->belongsTo('App\Models\Company','company_id')->select('id', 'name', 'logo');
+        return $this->belongsTo(Company::class,'company_id');
     }
 
-    public function city()
+    public function city(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo('App\Models\City','city_id')->with('country');
+        return $this->belongsTo(City::class,'city_id');
     }
 
-    public function area()
+    public function area(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo('App\Models\Area','area_id');
+        return $this->belongsTo(Area::class,'area_id');
     }
 
-    public function branch()
+    public function branch(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo('App\Models\Branch','branch_id');
+        return $this->belongsTo(Branch::class,'branch_id');
     }
 
-    public function awb()
+    public function awb(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany('App\Models\Awb','receiver_id');
+        return $this->hasMany(Awb::class,'receiver_id');
     }
 }

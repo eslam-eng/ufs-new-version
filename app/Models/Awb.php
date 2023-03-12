@@ -7,10 +7,12 @@ use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Scout\Searchable;
 
 class Awb extends Model
 {
     use HasFactory,SoftDeletes,Filterable,EscapeUnicodeJson;
+    use Searchable;
     public static $DEFAULIMAGE =  '/uploads/images/avatar.png';
 
     protected $fillable = [
@@ -24,31 +26,10 @@ class Awb extends Model
 
     protected $appends =['sheet_id', 'receiver_city', 'receiver_area', 'city', 'area'];
 
-    public function getCityAttribute() {
-        return optional($this->branch)->city;
-    }
-
     public function getAttachmentAttribute($value) {
         if (isset($value) && file_exists( public_path().'/uploads/awbs/delivered/'.$value ))
             return asset('uploads/awbs/delivered/'.$value);
         return url(self::$DEFAULIMAGE);
-    }
-
-    public function getAreaAttribute() {
-        return optional($this->branch)->area;
-    }
-
-    public function getSheetIdAttribute()
-    {
-        return optional($this->courierSheet)->sheet_id;
-    }
-
-    public function getReceiverCityAttribute() {
-        return optional(optional($this->receiver)->city)->name;
-    }
-
-    public function getReceiverAreaAttribute() {
-        return optional(optional($this->receiver)->area)->name;
     }
 
     public function details()
@@ -63,61 +44,61 @@ class Awb extends Model
 
     public function company()
     {
-        return $this->belongsTo(Company::class,'company_id')->with(['city', 'area']);
+        return $this->belongsTo(Company::class,'company_id');
     }
 
     public function branch()
     {
-        return $this->belongsTo(Branch::class,'branch_id')->with(['city', 'area']);
+        return $this->belongsTo(Branch::class,'branch_id');
     }
 
     public function department()
     {
-        return $this->belongsTo('App\Models\Department','department_id')->select('id', 'name');
+        return $this->belongsTo(Department::class,'department_id')->select('id', 'name');
     }
 
     public function receiver()
     {
-        return $this->belongsTo('App\Models\Receiver','receiver_id')->with(['city', 'area']);
+        return $this->belongsTo(Receiver::class,'receiver_id');
     }
 
     public function paymentType()
     {
-        return $this->belongsTo('App\Models\PaymentType','payment_type_id')->select('id', 'name');
+        return $this->belongsTo(PaymentType::class,'payment_type_id')->select('id', 'name');
     }
 
     public function service()
     {
-        return $this->belongsTo('App\Models\Service','service_id')->select('id', 'name');
+        return $this->belongsTo(Service::class,'service_id')->select('id', 'name');
     }
 
     public function status()
     {
-        return $this->belongsTo('App\Models\Status','status_id');
+        return $this->belongsTo(Status::class,'status_id');
     }
 
     public function user()
     {
-        return $this->belongsTo('App\Models\User','user_id')->select('id', 'name');
+        return $this->belongsTo(User::class,'user_id')->select('id', 'name');
     }
 
     public function city()
     {
-        return $this->belongsTo('App\Models\City','city_id')->select('id', 'name');
+        return $this->belongsTo(City::class,'city_id')->select('id', 'name');
     }
 
     public function area()
     {
-        return $this->belongsTo('App\Models\Area','area_id')->select('id', 'name');
+        return $this->belongsTo(Area::class,'area_id')->select('id', 'name');
     }
 
     public function awbHistory()
     {
-        return $this->hasMany('App\Models\AwbHistory','awb_id')->with(['status', 'user']);
+        return $this->hasMany(AwbHistory::class,'awb_id')->with(['status', 'user']);
     }
 
-    public function awbCategory()
+    public function awbCategory(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo('App\Models\AwbCategory','category_id');
+        return $this->belongsTo(AwbCategory::class,'category_id');
     }
 }
