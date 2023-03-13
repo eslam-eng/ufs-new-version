@@ -13,9 +13,9 @@ class AwbService extends BaseService
     }
 
 
-    public function listing(array $filters = [], array $withRelations = [],int $paginateLength = 10): \Illuminate\Contracts\Pagination\CursorPaginator
+    public function listing(array $filters = [], array $withRelations = [],int $paginateLength = 10): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
-        return $this->queryGet(filters: $filters, withRelations: $withRelations)->cursorPaginate($paginateLength);
+        return $this->queryGet(filters: $filters, withRelations: $withRelations)->paginate();
     }
 
     public function queryGet(array $filters = [], array $withRelations = []): Builder
