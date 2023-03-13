@@ -25,6 +25,9 @@ class AwbsResource extends JsonResource
             'receiver_name'=>$this->whenLoaded('receiver') && isset($this->receiver) ? $this->receiver->name:null,
             'reference'=>$this->whenLoaded('receiver') && isset($this->receiver) ? $this->receiver->referance:null,
             'status'=>optional($this->status)->name,
+            'receiver_title'=>optional($this->status)->name,
+            'id_number'=>$this->id_number,
+            'image'=>$this->attachment
         ];
     }
 
