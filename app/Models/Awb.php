@@ -27,8 +27,8 @@ class Awb extends Model
 
     public function getAttachmentAttribute($value) {
         if (isset($value) && file_exists( public_path().'/uploads/awbs/delivered/'.$value ))
-            return asset('uploads/awbs/delivered/'.$value);
-        return url(self::$DEFAULIMAGE);
+            return 'https://ufs-eg.com/uploads/awbs/delivered/'.$value;
+        return 'https://ufs-eg.com'.self::$DEFAULIMAGE;
     }
 
     public function details()
